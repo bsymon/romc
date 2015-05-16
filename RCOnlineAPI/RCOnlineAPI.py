@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import urllib
+import urllib2
 
 from abc import ABCMeta, abstractmethod
 
@@ -54,10 +55,13 @@ class RCOnlineAPI(object):
 				url += '?' + data
 		
 		try:
-			req  = urllib.urlopen(url, data if data != None and method == 'POST' else None)
-			data = req.read()
+			req   = urllib2.Request(url, data if data != None and method == 'POST' else None)
+			req.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
 			
-			req.close()
+			resp  = urllib2.urlopen(req)
+			data  = resp.read()
+			
+			resp.close()
 		except IOError as e:
 			raise RCException('[Online data] Cannot connect to "' + url + '" : ' + e.message)
 		
