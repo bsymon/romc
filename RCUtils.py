@@ -13,9 +13,11 @@ BASE_CONFIG_SECTION = 'BaseConfig'
 def load_games_dir(dir, exts):
 	""" Charge les fichiers jeux dans le dossier dir, avec les extensions exts """
 	
-	if not os.path.exists(dir):
+	if dir == '.':
+		raise RCException('You have to provide the working directory ("dir" config option)')
+	elif not os.path.exists(dir):
 		raise RCException('"' + dir + '" does not exist.')
-	if not os.path.isdir(dir):
+	elif not os.path.isdir(dir):
 		raise RCException('"' + dir + '" is not a valid directory.')
 	
 	# Si aucune extension n'a été renseignée dans la config, on charge tous les fichiers.

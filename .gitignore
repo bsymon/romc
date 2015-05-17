@@ -1,4 +1,3 @@
 *.sublime*
 *.pyc
 tests.py
-config.ini

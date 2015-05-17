@@ -53,7 +53,7 @@ def main(args=sys.argv):
 		config.add_option(system, 'cat_files',        '',    str)
 		config.add_option(system, 'ignore_cat',       '',    str)
 		config.add_option(system, 'exclude_cat',      '',    str)
-		config.add_option(system, 'move_files',       True,  bool)
+		config.add_option(system, 'move_files',       False,  bool)
 		
 		base_config.add_option(BASE_CONFIG_SECTION, 'log_process', True, bool)
 		base_config.add_option(BASE_CONFIG_SECTION, 'log_level',   1,    int)
