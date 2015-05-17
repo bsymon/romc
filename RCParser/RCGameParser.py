@@ -170,8 +170,6 @@ class RCGameParser(object):
 	def _online_data(self):
 		"""
 			Lance la recherche des informations en ligne, via l'API choisie dans "online_api".
-			
-			La recherche est impossible pour Mame.
 		"""
 		report   = RCReport()
 		
@@ -183,16 +181,17 @@ class RCGameParser(object):
 		except ImportError as e:
 			report.log('\tOnline API "' + api_name + '" does not exist.')
 			return
-		
-		if self.config.get(self.system, 'is_mame'):
-			report.log('\tMame cannot use "online_data".')
+		except RCException as e:
+			report.log('\t' + e.message)
 			return
+		
+		report.log('\tUsing "' + api_name + '" API', 2)
 		
 		# On récupère les langues autorisées pour la recherche.
 		lang = self.config.get(self.system, 'online_data_lang').split(',')
 		
 		for (game, infos) in self.games.items():
-			if len(lang) > 0 and infos['country'] not in lang:
+			if len(lang) > 0 and lang[0] != '' and infos['country'] not in lang:
 				continue
 			
 			report.log('\tGetting data for ' + game, 2)
@@ -205,12 +204,20 @@ class RCGameParser(object):
 				report.log('\t\t>> HTTP Error, stop looking for online data.')
 				break
 			elif data != None:
-				infos['year']   = data['release_date']
-				infos['genre']  = data['genre']
-				infos['editor'] = data['editor']
-				infos['resume'] = data['resume']
-				infos['note']   = data['note']
-				infos['rating'] = data['rating']
+				release_date = data['release_date']
+				genre        = data['genre']
+				editor       = data['editor']
+				resume       = data['resume']
+				note         = data['note']
+				rating       = data['rating']
+				
+				# Je procède comme ceci afin d'éviter de perdre des données qui peuvent être déjà présentes
+				infos['year']   = release_date or infos['year']
+				infos['genre']  = genre        or infos['genre']
+				infos['editor'] = editor       or infos['editor']
+				infos['resume'] = resume       or infos['resume']
+				infos['note']   = note         or infos['note']
+				infos['rating'] = rating       or infos['rating']
 	
 	def _hyperpause(self):
 		""" Génère un fichier INI pour HyperPause. """

@@ -8,8 +8,11 @@ from urlparse import urlparse
 from bs4 import BeautifulSoup, NavigableString
 from urllib2 import HTTPError
 
+from RCReport import RCReport
 from RCUtils import RCException
 from RCOnlineAPI import RCOnlineAPI
+
+REQUEST_SLEEP_TIME = 2
 
 class RCMobygamesAPI(RCOnlineAPI):
 	"""
@@ -19,6 +22,14 @@ class RCMobygamesAPI(RCOnlineAPI):
 	"""
 	
 	url = 'http://www.mobygames.com'
+	
+	def __init__(self, system, config):
+		super(RCMobygamesAPI, self).__init__(system, config)
+		
+		if not config.get(system, 'is_mame'):
+			raise RCException('Mobygames API can only be used by Mame.')
+		
+		self.is_first_request = True
 	
 	def _search_game(self, game):
 		"""
@@ -32,7 +43,8 @@ class RCMobygamesAPI(RCOnlineAPI):
 		return self.url + '/game/arcade/' + game
 	
 	def _get_data(self, url):
-		data = {
+		report = RCReport()
+		data   = {
 			'editor':       None,
 			'release_date': None,
 			'genre':        None,
@@ -42,41 +54,33 @@ class RCMobygamesAPI(RCOnlineAPI):
 			'image':        None
 		}
 		
-		# TODO s'il ce n'est pas la 1er requête, faire une pause de x secondes
+		if not self.is_first_request:
+			sleep(REQUEST_SLEEP_TIME)
 		
 		try:
 			resp = self._request(url)
 			html = BeautifulSoup(resp)
 			
 			# Sélection des champs qui nous intéresse.
-			editor       = html.select('#coreGameRelease a[href*="/company"]')
-			release_date = html.select('#coreGameRelease a[href*="/release-info"]')
-			genre        = html.select('#coreGameGenre a[href*="/genre"]')
-			rating       = []
-			note         = html.select('#coreGameScore .scoreHi')
+			note = html.select('#coreGameScore .scoreHi')
 			
 			# Récupération du resume
-			resume = ''
+			desc_block = html.find(class_='col-md-8')
+			resume     = ''
 			
-			for elem in html.find(class_='col-md-8').find('h2').next_siblings:
-				if type(elem) != NavigableString and 'class' in elem.attrs and 'sideBarLinks' in elem['class']:
-					break
-				
-				resume += elem.string or '\n'
+			if desc_block != None:
+				for elem in desc_block.find('h2').next_siblings:
+					if type(elem) != NavigableString and 'class' in elem.attrs and 'sideBarLinks' in elem['class']:
+						break
+					
+					resume += elem.string or '\n'
+				data['resume'] = resume
 			
-			if len(editor) > 0:
-				data['editor'] = editor[0].text.replace(u'\xa0', u' ') # Remplace les espace insécable
-			if len(release_date) > 0:
-				data['release_date'] = release_date[0].text
-			if len(genre) > 0:
-				data['genre'] = genre[0].text
-			if len(rating) > 0:
-				data['rating'] = rating.string
 			if len(note) > 0:
 				data['note'] = note[0].text.strip()
-			
-			data['resume'] = resume
 		except RCException:
 			pass
+		
+		self.is_first_request = False
 		
 		return data

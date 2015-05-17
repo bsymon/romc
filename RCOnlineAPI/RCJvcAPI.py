@@ -38,7 +38,7 @@ class RCJvcAPI(RCOnlineAPI):
 	
 	def _get_data(self, url):
 		rating_re = re.compile('\+ ?(3|7|12|16|18) ?ans') # Regex pour trouver le classement PEGI du jeu.
-		data     = {
+		data      = {
 			'editor':       None,
 			'release_date': None,
 			'genre':        None,

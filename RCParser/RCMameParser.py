@@ -126,7 +126,7 @@ class RCMameParser(RCGameParser):
 				'editor':        editor.text if editor != None else 'Unknow',
 				'year':          year.text if year != None else 'Unknow',
 				'genre':         game_genre,
-				'resumre':       None,
+				'resume':        None,
 				'note':          None,
 				'rating':        None,
 				'score':         1
