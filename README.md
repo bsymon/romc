@@ -229,3 +229,7 @@ Bugs and improvements
 ---------------------
 
 If you find bugs or if you any ideas to improve romc, please create a new __issue__ on GitHub ! Don't hesitate to fork !!
+
+#### Bugs
+
+- There is a "bug" in RCRomParser.py, with the regex. With name like this `Advance Wars 2 - Black Hole Rising (U) (Balance (V10) Hack)`, the word "Hack" is not found, but "V10" is. This cause the game to be considered as legit, with a dump version of 10.

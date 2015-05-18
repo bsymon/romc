@@ -89,6 +89,8 @@ class RCGameParser(object):
 					
 					if edition['country'] != None:
 						score += self.countries.index(edition['country'])
+					else:
+						score -= 1
 					
 					score += edition['version']
 					

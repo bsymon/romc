@@ -9,7 +9,7 @@ from RCGameParser import RCGameParser
 class RCRomParser(RCGameParser):
 	""" Parser pour système console """
 	
-	regex  = ur'(?:\((?P<field>(?:[\w\s.-]+ )?(?P<hack1>Hack)(?: [\w\s.-]*)?|[\w\s]+)\))|(?:\(V *(?P<version>[\d.]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])|(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP)\)?(?!\w)'
+	regex  = ur'(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.-]+ )?(?P<hack1>Hack)(?: [\w\s.-]*)?|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])|(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP)\)?(?!\w)'
 	
 	def __init__(self, gameList, config, system, hyperpause=False):
 		super(RCRomParser, self).__init__(gameList, config, system, hyperpause)

@@ -26,7 +26,7 @@ class RCJvcAPI(RCOnlineAPI):
 			site = urlparse(self.url).netloc
 			
 			# On récupère les 2 premiers liens afin d'être sûr d'avoir le lien vers le jeu.
-			for result in search('site:%s %s %s' % (site, game, self.system), num=2, stop=1, pause=5):
+			for result in search('site:%s %s %s' % (site, game, self.system), num=2, stop=1, pause=2):
 				link = result if '/jeux/' in result else None
 				
 				if link:
