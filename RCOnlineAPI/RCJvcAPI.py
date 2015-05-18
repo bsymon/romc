@@ -26,7 +26,7 @@ class RCJvcAPI(RCOnlineAPI):
 			site = urlparse(self.url).netloc
 			
 			# On récupère les 2 premiers liens afin d'être sûr d'avoir le lien vers le jeu.
-			for result in search('site:%s %s %s' % (site, game, self.system), num=2, stop=1, pause=2):
+			for result in search('site:%s %s %s' % (site, game, self.system), num=2, stop=1, pause=5):
 				link = result if '/jeux/' in result else None
 				
 				if link:
@@ -53,26 +53,30 @@ class RCJvcAPI(RCOnlineAPI):
 			html     = BeautifulSoup(resp)
 			techlist = html.find(class_='resume-tech-list')
 			
-			# Sélection des champs qui nous intéresse.
-			editor       = techlist.select('li[itemprop="creator"] span[itemprop="name"]')
-			release_date = techlist.select('li[itemprop="creator"] + li > span')
-			genre        = techlist.select('span[itemprop="genre"] > *')
-			rating       = techlist.find(text=rating_re)
-			note         = html.select('div.hit-note-g')
-			resume       = html.select('span[itemprop="description"]')
-			
-			if len(editor) > 0:
-				data['editor'] = editor[0].text
-			if len(release_date) > 0:
-				data['release_date'] = release_date[0]['content'][0:4]
-			if len(genre) > 0:
-				data['genre'] = genre[0].text
-			if rating != None:
-				data['rating'] = rating.string
-			if len(note) > 0:
-				data['note'] = note[0].text.strip()
-			if len(resume) > 0:
-				data['resume'] = resume[0].text
+			# Si "techlist" vaut None, c'est que ce n'est pas une fiche de jeu.
+			if techlist != None:
+				# Sélection des champs qui nous intéresse.
+				editor       = techlist.select('li[itemprop="creator"] span[itemprop="name"]')
+				release_date = techlist.select('li[itemprop="creator"] + li > span')
+				genre        = techlist.select('span[itemprop="genre"] > *')
+				rating       = techlist.find(text=rating_re)
+				note         = html.select('div.hit-note-g')
+				resume       = html.select('span[itemprop="description"]')
+				
+				if len(editor) > 0:
+					data['editor'] = editor[0].text
+				if len(release_date) > 0:
+					data['release_date'] = release_date[0]['content'][0:4]
+				if len(genre) > 0:
+					data['genre'] = genre[0].text
+				if rating != None:
+					data['rating'] = rating.string
+				if len(note) > 0:
+					data['note'] = note[0].text.strip()
+				if len(resume) > 0:
+					data['resume'] = resume[0].text
+			else:
+				return -1
 		except RCException:
 			pass
 		
