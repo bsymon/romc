@@ -3,6 +3,7 @@
 import codecs
 
 from lxml import etree
+from distutils.util import strtobool
 
 from RCGameParser import RCGameParser
 
@@ -43,6 +44,7 @@ class RCCacheParser(RCGameParser):
 			resume       = game.find('resume')
 			note         = game.find('note')
 			rating       = game.find('rating')
+			onlineData   = game.find('onlineData')
 			
 			self.games[game.find('description').text] = {
 				'original_name': game.get('name'),
@@ -54,5 +56,6 @@ class RCCacheParser(RCGameParser):
 				'resume':        resume.text       if resume != None       else '',
 				'note':          note.text         if note != None         else '',
 				'rating':        rating.text       if rating != None       else '',
-				'score':         None
+				'score':         None,
+				'onlineData':    bool(strtobool(onlineData.text)) if onlineData != None else False
 			}

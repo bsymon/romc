@@ -43,6 +43,10 @@ class RCRomParser(RCGameParser):
 				flag_ver     = flag_ver or field.group('flag_version')
 				flags        = flags    or field.group('flags')
 				
+				# Ajouter une var temp_flag, et vérifier si elle est dans la liste "auth_flags".
+				# Si oui, variable "can_pass" = True (nom à revoir).
+				# Si non, ajouter valeur dans variable "flags".
+				
 				if temp_country in self.countries or temp_country in self.exclude_countries:
 					country = country or temp_country
 			
@@ -88,7 +92,8 @@ class RCRomParser(RCGameParser):
 				'resume':        None,
 				'note':          None,
 				'rating':        None,
-				'score':         100 if flags == None or hack != None else self._calc_flag_score(good, fixe, flag_ver)
+				'score':         100 if flags == None or hack != None else self._calc_flag_score(good, fixe, flag_ver),
+				'onlineData':    False
 			})
 			
 			report.log('\t\t+ Preselected game. Clean name : ' + game_clean_name, 2)

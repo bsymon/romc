@@ -138,7 +138,8 @@ class RCGameParser(object):
 				E.resume(infos['resume'] or ''),
 				E.note(infos['note'] or ''),
 				E.rating(infos['rating'] or ''),
-				E.enabled('Yes')
+				E.enabled('Yes'),
+				E.onlineData(str(infos['onlineData']))
 			)
 			
 			db.append(game_tag)
@@ -193,7 +194,9 @@ class RCGameParser(object):
 		lang = self.config.get(self.system, 'online_data_lang').split(',')
 		
 		for (game, infos) in self.games.items():
-			if len(lang) > 0 and lang[0] != '' and infos['country'] not in lang:
+			if infos['onlineData']:
+				continue
+			elif len(lang) > 0 and lang[0] != '' and infos['country'] not in lang:
 				continue
 			
 			report.log('\tGetting data for ' + game, 2)
@@ -214,12 +217,13 @@ class RCGameParser(object):
 				rating       = data['rating']
 				
 				# Je procède comme ceci afin d'éviter de perdre des données qui peuvent être déjà présentes
-				infos['year']   = release_date or infos['year']
-				infos['genre']  = genre        or infos['genre']
-				infos['editor'] = editor       or infos['editor']
-				infos['resume'] = resume       or infos['resume']
-				infos['note']   = note         or infos['note']
-				infos['rating'] = rating       or infos['rating']
+				infos['year']       = release_date or infos['year']
+				infos['genre']      = genre        or infos['genre']
+				infos['editor']     = editor       or infos['editor']
+				infos['resume']     = resume       or infos['resume']
+				infos['note']       = note         or infos['note']
+				infos['rating']     = rating       or infos['rating']
+				infos['onlineData'] = True
 	
 	def _hyperpause(self):
 		""" Génère un fichier INI pour HyperPause. """
@@ -269,12 +273,12 @@ class RCGameParser(object):
 				report.log('MOVING ' + str(len(self.move_games)) + ' GAMES')
 				self._move_games()
 			
-			if self.config.get(self.system, 'online_data'):
-				report.log('LOOKING FOR ONLINE DATA ...')
-				self._online_data()
-			
-			report.log('BUILDING HYPERSPIN DATABASE')
-			self._build_database()
+		if self.config.get(self.system, 'online_data'):
+			report.log('LOOKING FOR ONLINE DATA ...')
+			self._online_data()
+		
+		report.log('BUILDING HYPERSPIN DATABASE')
+		self._build_database()
 		
 		# On génère le fichier INI HyperPause si besoin.
 		if self.hyperpause:

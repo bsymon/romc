@@ -213,7 +213,7 @@ Then go in romc directory, launch a new command line and type : `romc.py (system
 #### Options
 
 - `-p` : Also generate HyperPause game info INI file, located at __HyperPause__.
-- `-c` : Use an already generated _system_.xml file. This option is only usefull if you have already cleaned your set, but you don't have used the `-p` option. This avoid redoing all the process.
+- `-c` : Use an already generated _system_.xml file. Use this option when you want to generate HyperPause INI file without redoing all the process, or when a problem occurs during the online data process.
 
 #### Dependencies
 
