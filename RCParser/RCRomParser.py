@@ -9,11 +9,12 @@ from RCGameParser import RCGameParser
 class RCRomParser(RCGameParser):
 	""" Parser pour système console """
 	
-	regex  = ur'(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.-]+ )?(?P<hack1>Hack)(?: [\w\s.-]*)?|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])|(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP)\)?(?!\w)'
+	regex  = ur'(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP|HWTests)\)?(?!\w)|(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.&-]+ )?(?P<hack1>Hack)(?: [\w\s.&-]*)?|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])'
 	
 	def __init__(self, gameList, config, system, hyperpause=False):
 		super(RCRomParser, self).__init__(gameList, config, system, hyperpause)
 		self.move_temp_games = True
+		self.ok_flags           = config.get(system, 'flags').split(',')
 	
 	def _first_stage(self):
 		report = RCReport()
@@ -28,6 +29,7 @@ class RCRomParser(RCGameParser):
 			special    = None
 			flag_ver   = None
 			flags      = None
+			ok_flags   = None
 			
 			move = False
 			
@@ -35,20 +37,24 @@ class RCRomParser(RCGameParser):
 			
 			for field in regex.finditer(game_name):
 				temp_country = field.group('field')
+				temp_flags   = field.group('flags')
+				
 				version      = version  or field.group('version')
 				hack         = hack     or field.group('hack1') or field.group('hack2')
 				good         = good     or field.group('good')
 				fixe         = fixe     or field.group('fixe')
 				special      = special  or field.group('special')
 				flag_ver     = flag_ver or field.group('flag_version')
-				flags        = flags    or field.group('flags')
-				
-				# Ajouter une var temp_flag, et vérifier si elle est dans la liste "auth_flags".
-				# Si oui, variable "can_pass" = True (nom à revoir).
-				# Si non, ajouter valeur dans variable "flags".
+				# flags        = flags    or field.group('flags')
 				
 				if temp_country in self.countries or temp_country in self.exclude_countries:
 					country = country or temp_country
+				
+				if temp_flags in self.ok_flags and flags == None:
+					ok_flags = ok_flags or temp_flags
+				else:
+					flags    = temp_flags
+					ok_flags = None
 			
 			# On conserve que les meilleures dump
 			if special != None and not self.config.get(self.system, 'special'):
@@ -59,7 +65,7 @@ class RCRomParser(RCGameParser):
 				report.log('\t\t- Not legit', 3)
 				move = True
 			# Si il y a n'importe quel autre flag, on ne garde pas
-			elif good == None and fixe == None and flags != None:
+			elif good == None and fixe == None and ok_flags == None and flags != None:
 				report.log('\t\t- Bad dump', 3)
 				move = True
 			# On vérifie si on autorise le pays.

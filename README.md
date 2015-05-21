@@ -51,6 +51,9 @@ Create a file called `config.ini`. In this file will live the base configuration
 	; Select special games.
 	special = true
 	
+	; A list of flags to be considered as valid.
+	flags = ''
+	
 	; Look for additionals data online. (true or false)
 	online_data = false
 	

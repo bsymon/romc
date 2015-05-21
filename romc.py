@@ -45,6 +45,7 @@ def main(args=sys.argv):
 		config.add_option(system, 'allow_no_country', True,  bool)
 		config.add_option(system, 'only_legit',       True,  bool)
 		config.add_option(system, 'special',          True,  bool)
+		config.add_option(system, 'flags',            '',    str)
 		config.add_option(system, 'online_data',      False, bool)
 		config.add_option(system, 'online_data_lang', '',    str)
 		config.add_option(system, 'online_api',       '',    str)
