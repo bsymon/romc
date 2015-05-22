@@ -24,17 +24,10 @@ class RCMameParser(RCGameParser):
 		cat_files = load_cat_files(config.get(system, 'cat_files'))
 		
 		try:
-			if dat_file != '':
-				buff     = codecs.open(dat_file.decode('utf-8'), 'r', 'utf-8')
-				dat_file = buff.read()
-				
-				buff.close()
-			else:
-				raise RCException('You have to provide the .dat file.')
+			self.dat = etree.parse(dat_file)
 		except IOError as e:
-			raise RCException('Unable to open MAME .dat file (' + dat_file.decode('utf-8') + '): ' + e.strerror)
+			raise RCException('Unable to open MAME .dat file (' + dat_file.decode('utf-8') + ').')
 		
-		self.dat = etree.fromstring(dat_file.encode('utf-8'))
 		self.cat = ConfigParser.ConfigParser(allow_no_value=True)
 		
 		self.cat.readfp(cat_files)
