@@ -76,7 +76,7 @@ Create a file called `config.ini`. In this file will live the base configuration
 	ignore_cat = ''
 	
 	; Same as "ignore_cat", but the games will be moved in a directory called "_moved" ("move_files" have to be true).
-	exclude_dat = ''
+	exclude_cat = ''
 	
 	; Wheter moves files or not. (true or false)
 	move_files = false
