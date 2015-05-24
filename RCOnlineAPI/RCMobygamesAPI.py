@@ -69,15 +69,18 @@ class RCMobygamesAPI(RCOnlineAPI):
 			resume     = ''
 			
 			if desc_block != None:
-				for elem in desc_block.find('h2').next_siblings:
-					if type(elem) != NavigableString and 'class' in elem.attrs and 'sideBarLinks' in elem['class']:
-						break
-					
-					resume += elem.string or '\n'
-				data['resume'] = resume
-			
-			if len(note) > 0:
-				data['note'] = note[0].text.strip()
+				if desc_block != None:
+					for elem in desc_block.find('h2').next_siblings:
+						if type(elem) != NavigableString and 'class' in elem.attrs and 'sideBarLinks' in elem['class']:
+							break
+						
+						resume += elem.string or '\n'
+					data['resume'] = resume
+				
+				if len(note) > 0:
+					data['note'] = note[0].text.strip()
+			else:
+				return -1
 		except RCException:
 			pass
 		

@@ -12,6 +12,23 @@ Author
 
 This script is made and maintained by __bsymon__ for HyperSpin community.
 
+When to use it ?
+----------------
+
+Use this script when you have a set of games to clean. The filename of the games have to look like this :
+
+- Astro Boy - Omega Factor (E) (M6)
+- Bomberman Max 2 - Red (U) [hIR00]
+- Ironsword - Wizards & Warriors II (E) [!]
+- Airwolf (U) [b5]
+- Castlevania (U) (V1.0) [t2]
+- Ironman - X-O Manowar in Heavy Metal (U) [S][!]
+- ...
+
+The things at the end of the game name are called flags, and romc looks at them to do its job. The flags give information about the dump of the game.
+
+romc also works with Mame set (see [Mame specifics](#mame-specifics)).
+
 Configuration
 -------------
 
@@ -98,7 +115,7 @@ For the others systems
 
 1. Ignore the game if it is special and `special` is `false`.
 2. Ignore the game if it is a hack and `only_legit` is `true`.
-3. Ignore the game if the dump is not good _(flag __!__, or the higher fixe)_.
+3. Ignore the game if the dump is not good _(flag [!], or the higher fixe [fX])_.
 4. Ignore the game if the country cannot be found, and `allow_no_coutry` is `false`.
 5. Ignore the game if the country is in `exclude_country`. 
 
@@ -142,7 +159,7 @@ For a better filtering, you can tell romc which countries you prefer to select (
 
 The `allow_no_country` config option can acts like a gray-list. If romc cannot find the country of a game, `allow_no_country` set to `true` allows the game to be selected. If set to `false`, the game will be ignored.
 
-Here is a list of Mame countries I identified :
+Here is a list of Mame countries I've identified :
 
 - Japan
 - J (for Japan)
@@ -181,6 +198,7 @@ And a list of countries for others systems (like SNES, GBA, PS1, etc.) :
 - Unk (Unknow Country)
 - I (Italy)
 - Unl (Unlicensed)
+- UE (???)
 
 _Source [VNotes Chronicle](http://www.vnoteschronicle.com/notes/rom-codes-explained)_
 
@@ -200,7 +218,7 @@ After this, in `ignore_cat` or `exclude_cat`, you indicate which genre you want 
 #### Notes
 
 `ignore_cat` only ignore the game. It is not added in the final XML.
-`exclude_cat` acts like `ignore_cat`, but the game will also be moved in a separeted directory, called ___moved__.
+`exclude_cat` acts like `ignore_cat`, but the game will also be moved in a separeted directory, called "_moved".
 
 Is it important to note that games, to works with Mame, have often need of dependancies. If you place all the genre you don't want in `exclude_cat`, you can break some games !
 
@@ -211,12 +229,29 @@ Usage
 
 First you need Python 2.7 : [Download Python](https://www.python.org/downloads/)
 
-Then go in romc directory, launch a new command line and type : `romc.py (system) [-p] [-c]` where `(system)` is one of the systems listed in `config.ini`.
+Then go in romc directory, launch a new command line and type : `python romc.py (system) [-p] [-c] [--csv [FIELD, ...]]` where `(system)` is one of the systems listed in `config.ini`.
 
 #### Options
 
 - `-p` : Also generate HyperPause game info INI file, located at __HyperPause__.
 - `-c` : Use an already generated _system_.xml file. Use this option when you want to generate HyperPause INI file without redoing all the process, or when a problem occurs during the online data process.
+- `--csv` : generate a CSV file _system_.csv. It include by default the name of the game, and you can specify what fields you want.
+
+##### CSV fields
+
+- __original_name__ : The original name of the game (the filename).
+- __country__ : The country.
+- __version__ : The dump version of the game.
+- __editor__ : Editor, manufacturer, developper, ...
+- __year__ : Release year.
+- __genre__ : Genre.
+- __resume__ : A description of the game.
+- __note__ : The game note.
+- __rating__ : The PEGI or ESRB rating.
+- __score__ : The score the game had during the second stage. If you use `-c` option, will be equal to 0.
+- __onlineData__ : Whether the game has online data or not.
+
+__Example__ : `python romc.py Mame -c --csv year country note`
 
 #### Dependencies
 

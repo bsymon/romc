@@ -59,18 +59,21 @@ class RCIgnAPI(RCOnlineAPI):
 			note         = html.select('.communityRating > .ratingValue')
 			resume       = game_info.find('p')
 			
-			if len(editor) > 0:
-				data['editor'] = editor[0].text.strip()
-			if len(release_date) > 0:
-				data['release_date'] = release_date[0].text.strip()[-4:]
-			if len(genre) > 0:
-				data['genre'] = genre[0].text.strip()
-			if len(rating) > 0:
-				data['rating'] = rating[0].text.replace(' for', '')
-			if len(note) > 0:
-				data['note'] = note[0].text.strip()
-			if resume != None:
-				data['resume'] = resume.text.strip()
+			if game_info != None:
+				if len(editor) > 0:
+					data['editor'] = editor[0].text.strip()
+				if len(release_date) > 0:
+					data['release_date'] = release_date[0].text.strip()[-4:]
+				if len(genre) > 0:
+					data['genre'] = genre[0].text.strip()
+				if len(rating) > 0:
+					data['rating'] = rating[0].text.replace(' for', '')
+				if len(note) > 0:
+					data['note'] = note[0].text.strip()
+				if resume != None:
+					data['resume'] = resume.text.strip()
+			else:
+				return -1
 		except RCException:
 			pass
 		
