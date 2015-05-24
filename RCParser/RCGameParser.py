@@ -5,6 +5,7 @@ import os
 import os.path
 import ConfigParser
 import importlib
+import csv
 
 from lxml import etree
 from lxml.builder import E
@@ -23,16 +24,18 @@ class RCGameParser(object):
 	
 	regex = None
 	
-	def __init__(self, games_list, config, system, hyperpause=False):
+	def __init__(self, games_list, config, system, hyperpause=False, csv=None):
 		self.temp_games        = {}
 		self.games             = {}
 		self.list              = games_list or []
 		self.config            = config
 		self.system            = system
 		self.hyperpause        = hyperpause
+		self.csv               = csv
 		self.excludes          = []
 		self.move_games        = []
 		self.move_temp_games   = False
+		self.generate          = True
 		self.total_editions    = 0
 		
 		if config != None:
@@ -191,7 +194,8 @@ class RCGameParser(object):
 		report.log('\tUsing "' + api_name + '" API', 2)
 		
 		# On récupère les langues autorisées pour la recherche.
-		lang = self.config.get(self.system, 'online_data_lang').split(',')
+		lang          = self.config.get(self.system, 'online_data_lang').split(',')
+		self.generate = True
 		
 		for (game, infos) in self.games.items():
 			if infos['onlineData']:
@@ -257,6 +261,24 @@ class RCGameParser(object):
 		ini_file.writelines(lines)
 		ini_file.close()
 	
+	def _csv(self):
+		""" Génère le fichier CSV, avec les champs passés en paramètre de la ligne de commande. """
+		
+		file       = codecs.open(self.system + '.csv', 'wb')
+		csv_writer = csv.writer(file)
+		csv_fields = ['game']
+		
+		csv_fields.extend(self.csv)
+		csv_writer.writerow(csv_fields)
+		
+		for (game, infos) in self.games.items():
+			fields = [game]
+			
+			fields.extend([value for (field, value) in infos.items() if field in self.csv])
+			csv_writer.writerow(['???' if v == None else v for v in fields])
+		
+		file.close()
+	
 	def clean(self):
 		""" Exécute les processus de nettoyage. """
 		
@@ -277,13 +299,19 @@ class RCGameParser(object):
 			report.log('LOOKING FOR ONLINE DATA ...')
 			self._online_data()
 		
-		report.log('BUILDING HYPERSPIN DATABASE')
-		self._build_database()
+		if self.generate:
+			report.log('BUILDING HYPERSPIN DATABASE')
+			self._build_database()
 		
 		# On génère le fichier INI HyperPause si besoin.
 		if self.hyperpause:
 			report.log('GENERATING HYPERPAUSE INI FILE')
 			self._hyperpause()
+		
+		# On génère le fichier CSV.
+		if self.csv != None:
+			report.log('GENERATING CSV FILE')
+			self._csv()
 		
 		# Rapport
 		report.log('=============== REPORT ===============')

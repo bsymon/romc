@@ -11,8 +11,8 @@ class RCRomParser(RCGameParser):
 	
 	regex  = ur'(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP|HWTests)\)?(?!\w)|(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.&-\']+ )?(?P<hack1>Hack)(?: [\w\s.&-\']*)?|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])'
 	
-	def __init__(self, gameList, config, system, hyperpause=False):
-		super(RCRomParser, self).__init__(gameList, config, system, hyperpause)
+	def __init__(self, gameList, config, system, hyperpause=False, csv=None):
+		super(RCRomParser, self).__init__(gameList, config, system, hyperpause=hyperpause, csv=csv)
 		self.move_temp_games = True
 		self.ok_flags           = config.get(system, 'flags').split(',')
 	

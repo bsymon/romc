@@ -20,6 +20,7 @@ def main(args=sys.argv):
 	system      = cmd.system
 	hyperpause  = cmd.hyperpause
 	cache       = cmd.cache
+	csv         = cmd.csv
 	config      = RCConfig()
 	base_config = RCConfig()
 	
@@ -71,11 +72,11 @@ def main(args=sys.argv):
 		os.chdir(cwd)
 		
 		if cache:
-			cleaner = RCCacheParser(config, system, hyperpause=hyperpause)
+			cleaner = RCCacheParser(config, system, hyperpause=hyperpause, csv=csv)
 		elif config.get(system, 'is_mame'):
-			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause)
+			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause, csv=csv)
 		else:
-			cleaner = RCRomParser(games, config, system, hyperpause=hyperpause)
+			cleaner = RCRomParser(games, config, system, hyperpause=hyperpause, csv=csv)
 		
 		report = RCReport(system, base_config)
 		report.log('ROMC : start cleaning "' + system + '"')
@@ -97,6 +98,7 @@ def init_cmd_line():
 	parser.add_argument('system', type=str, metavar='SYSTEM', help='The system to clean.')
 	parser.add_argument('-p', '--hpause', dest='hyperpause', action='store_true', help='Generate HyperPause game info INI.')
 	parser.add_argument('-c', '--cache', dest='cache', action='store_true', help='Whether use or not a generated database for SYSTEM.')
+	parser.add_argument('--csv', dest='csv', nargs='*', metavar='FIELD', help='The fields to use for the CSV file.')
 	
 	return parser.parse_args()
 

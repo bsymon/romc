@@ -18,10 +18,11 @@ class RCCacheParser(RCGameParser):
 		Utilisé pour les opérations post-génération, afin d'éviter de refaire tout le processus.
 	"""
 	
-	def __init__(self, config, system, hyperpause=False):
-		super(RCCacheParser, self).__init__(None, config, system, hyperpause=hyperpause)
+	def __init__(self, config, system, hyperpause=False, csv=None):
+		super(RCCacheParser, self).__init__(None, config, system, hyperpause=hyperpause, csv=csv)
 		
 		self.use_cache = True
+		self.generate  = False
 	
 	def _first_stage(self):
 		""" Ouvre le fichier de base de données du système et enregistre les jeux. """
