@@ -234,7 +234,7 @@ Then go in romc directory, launch a new command line and type : `python romc.py 
 #### Options
 
 - `-p` : Also generate HyperPause game info INI file, located at __HyperPause__.
-- `-c` : Use an already generated _system_.xml file. Use this option when you want to generate HyperPause INI file without redoing all the process, or when a problem occurs during the online data process.
+- `-c` : Use an already generated _system_.xml file.
 - `--csv` : generate a CSV file _system_.csv. It include by default the name of the game, and you can specify what fields you want.
 
 ##### CSV fields
