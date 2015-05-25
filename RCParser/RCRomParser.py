@@ -99,7 +99,7 @@ class RCRomParser(RCGameParser):
 				'note':          None,
 				'rating':        None,
 				'score':         100 if flags == None or hack != None else self._calc_flag_score(good, fixe, flag_ver),
-				'onlineData':    False
+				'onlineData':    { 'state': False }
 			})
 			
 			report.log('\t\t+ Preselected game. Clean name : ' + game_clean_name, 2)

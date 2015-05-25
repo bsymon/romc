@@ -123,7 +123,7 @@ class RCMameParser(RCGameParser):
 				'note':          None,
 				'rating':        None,
 				'score':         1,
-				'onlineData':    False
+				'onlineData':    { 'state': False }
 			})
 			
 			report.log('\t\t+ Preselected game. Clean name : ' + game_clean_name + ' (from "' + game_name + '")', 2)

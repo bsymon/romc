@@ -63,6 +63,9 @@ class RCJvcAPI(RCOnlineAPI):
 				note         = html.select('div.hit-note-g')
 				resume       = html.select('span[itemprop="description"]')
 				
+				# TODO chercher l'image
+				# TODO récup l'extension de l'image
+				
 				if len(editor) > 0:
 					data['editor'] = editor[0].text
 				if len(release_date) > 0:

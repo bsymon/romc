@@ -59,6 +59,7 @@ class RCOnlineAPI(object):
 			req.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
 			
 			resp  = urllib2.urlopen(req)
+			# TODO Si file = True, ne pas retourner la réponse, mais l'objet.
 			data  = resp.read()
 			
 			resp.close()

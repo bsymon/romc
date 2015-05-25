@@ -39,6 +39,7 @@ class RCCacheParser(RCGameParser):
 		
 		
 		for game in xml.findall('game'):
+			name         = game.find('description').text
 			manufacturer = game.find('manufacturer')
 			year         = game.find('year')
 			genre        = game.find('genre')
@@ -47,7 +48,7 @@ class RCCacheParser(RCGameParser):
 			rating       = game.find('rating')
 			onlineData   = game.find('onlineData')
 			
-			self.games[game.find('description').text] = {
+			self.games[name] = {
 				'original_name': game.get('name'),
 				'country':       None,
 				'version':       None,
@@ -58,5 +59,8 @@ class RCCacheParser(RCGameParser):
 				'note':          note.text         if note != None         else '',
 				'rating':        rating.text       if rating != None       else '',
 				'score':         None,
-				'onlineData':    bool(strtobool(onlineData.text)) if onlineData != None else False
+				'onlineData':    { 'state': bool(strtobool(onlineData.get('state'))) if onlineData != None else False }
 			}
+			
+			for api in onlineData:
+				self.games[name]['onlineData'][api.tag] = bool(strtobool(api.text))

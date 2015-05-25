@@ -132,7 +132,8 @@ class RCGameParser(object):
 		)
 		
 		for (game, infos) in self.games.items():
-			game_tag = E.game(
+			online_data = E.onlineData({ 'state': str(infos['onlineData']['state']) })
+			game_tag    = E.game(
 				{ 'name': infos['original_name'], 'index': 'true', 'image': '1' },
 				E.description(game),
 				E.cloneof(''),
@@ -143,10 +144,17 @@ class RCGameParser(object):
 				E.resume(infos['resume'] or ''),
 				E.note(infos['note'] or ''),
 				E.rating(infos['rating'] or ''),
-				E.enabled('Yes'),
-				E.onlineData(str(infos['onlineData']))
+				E.enabled('Yes')
 			)
 			
+			# Ajout des états des différentes API
+			for (api, state) in infos['onlineData'].items():
+				if api == 'state':
+					continue
+				
+				online_data.append(E(api, str(state)))
+			
+			game_tag.append(online_data)
 			db.append(game_tag)
 		
 		db_file = codecs.open(self.system + '.xml', 'w+', 'utf-8')
@@ -183,24 +191,26 @@ class RCGameParser(object):
 		
 		try:
 			# Importe la bonne API.
-			api_name = 'RC' + self.config.get(self.system, 'online_api').capitalize() + 'API'
-			api_mod  = importlib.import_module('RCOnlineAPI.' + api_name)
-			api      = getattr(api_mod, api_name)(self.system, self.config)
+			api_name       = self.config.get(self.system, 'online_api')
+			api_class_name = 'RC' + api_name.capitalize() + 'API'
+			api_mod        = importlib.import_module('RCOnlineAPI.' + api_class_name)
+			api            = getattr(api_mod, api_class_name)(self.system, self.config)
 		except ImportError as e:
-			report.log('\tOnline API "' + api_name + '" does not exist.')
+			report.log('\tOnline API "' + api_class_name + '" does not exist.')
 			return
 		except RCException as e:
 			report.log('\t' + e.message)
 			return
 		
-		report.log('\tUsing "' + api_name + '" API', 2)
+		report.log('\tUsing "' + api_class_name + '" API', 2)
 		
 		# On récupère les langues autorisées pour la recherche.
 		lang          = self.config.get(self.system, 'online_data_lang').split(',')
 		self.generate = True
 		
 		for (game, infos) in self.games.items():
-			if infos['onlineData']:
+			# On ne cherche pas de données si il y en a déjà ou si aucune donnée n'a été trouvée la fois précédente avec l'API utilisée.
+			if infos['onlineData']['state'] or (api_name in infos['onlineData'] and not infos['onlineData'][api_name]):
 				continue
 			elif len(lang) > 0 and lang[0] != '' and infos['country'] not in lang:
 				continue
@@ -210,6 +220,7 @@ class RCGameParser(object):
 			data = api.search(game)
 			
 			if data == -1:
+				infos['onlineData'][api_name] = False
 				report.log('\t\t>> Unable to find data.', 2)
 			elif data == -2:
 				report.log('\t\t>> HTTP Error, stop looking for online data.')
@@ -229,7 +240,11 @@ class RCGameParser(object):
 				infos['resume']     = resume       or infos['resume']
 				infos['note']       = note         or infos['note']
 				infos['rating']     = rating       or infos['rating']
-				infos['onlineData'] = True # NOTE peut-être toujours mettre à True, même si aucun données trouvées.
+				
+				infos['onlineData']['state']  = True
+				infos['onlineData'][api_name] = True
+				
+				# TODO si image, enregistrer dans un fichier ayant le même nom que le jeu
 	
 	def _hyperpause(self):
 		""" Génère un fichier INI pour HyperPause. """
