@@ -24,7 +24,7 @@ class RCGameParser(object):
 	
 	regex = None
 	
-	def __init__(self, games_list, config, system, hyperpause=False, csv=None):
+	def __init__(self, games_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix=''):
 		self.temp_games        = {}
 		self.games             = {}
 		self.list              = games_list or []
@@ -32,6 +32,8 @@ class RCGameParser(object):
 		self.system            = system
 		self.hyperpause        = hyperpause
 		self.csv               = csv
+		self.strl              = strl
+		self.strl_suffix       = strl_suffix
 		self.excludes          = []
 		self.move_games        = []
 		self.move_temp_games   = False
@@ -42,7 +44,7 @@ class RCGameParser(object):
 			self.countries         = config.get(system, 'country').split(',')[::-1]
 			self.exclude_countries = config.get(system, 'exclude_country').split(',')
 		
-		self.use_cache         = False
+		self.use_cache = False
 	
 	@abstractmethod
 	def _first_stage(self):
@@ -227,7 +229,7 @@ class RCGameParser(object):
 				infos['resume']     = resume       or infos['resume']
 				infos['note']       = note         or infos['note']
 				infos['rating']     = rating       or infos['rating']
-				infos['onlineData'] = True
+				infos['onlineData'] = True # NOTE peut-être toujours mettre à True, même si aucun données trouvées.
 	
 	def _hyperpause(self):
 		""" Génère un fichier INI pour HyperPause. """
@@ -264,9 +266,9 @@ class RCGameParser(object):
 	def _csv(self):
 		""" Génère le fichier CSV, avec les champs passés en paramètre de la ligne de commande. """
 		
-		file       = codecs.open(self.system + '.csv', 'wb')
-		csv_writer = csv.writer(file)
-		csv_fields = ['game']
+		file        = codecs.open(self.system + '.csv', 'wb')
+		csv_writer  = csv.writer(file)
+		csv_fields  = ['game']
 		
 		csv_fields.extend(self.csv)
 		csv_writer.writerow(csv_fields)
@@ -275,7 +277,7 @@ class RCGameParser(object):
 			fields = [game]
 			
 			fields.extend([value for (field, value) in infos.items() if field in self.csv])
-			csv_writer.writerow(['???' if v == None else v for v in fields])
+			csv_writer.writerow(['???' if v == None else (v if len(v) <= self.strl else v[0:self.strl] + self.strl_suffix) for v in fields])
 		
 		file.close()
 	

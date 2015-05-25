@@ -21,6 +21,7 @@ def main(args=sys.argv):
 	hyperpause  = cmd.hyperpause
 	cache       = cmd.cache
 	csv         = cmd.csv
+	strl        = cmd.strl
 	config      = RCConfig()
 	base_config = RCConfig()
 	
@@ -55,11 +56,12 @@ def main(args=sys.argv):
 		config.add_option(system, 'cat_files',        '',    str)
 		config.add_option(system, 'ignore_cat',       '',    str)
 		config.add_option(system, 'exclude_cat',      '',    str)
-		config.add_option(system, 'move_files',       False,  bool)
+		config.add_option(system, 'move_files',       False, bool)
 		
-		base_config.add_option(BASE_CONFIG_SECTION, 'log_process', True, bool)
-		base_config.add_option(BASE_CONFIG_SECTION, 'log_level',   1,    int)
-		base_config.add_option(BASE_CONFIG_SECTION, 'log_file',    '',   str)
+		base_config.add_option(BASE_CONFIG_SECTION, 'log_process',            True,  bool)
+		base_config.add_option(BASE_CONFIG_SECTION, 'log_level',              1,     int)
+		base_config.add_option(BASE_CONFIG_SECTION, 'log_file',               '',    str)
+		base_config.add_option(BASE_CONFIG_SECTION, 'csv_long_string_suffix', '...', str)
 		
 		# Synchro du fichier avec la config
 		config.read(config_parser, system)
@@ -71,12 +73,14 @@ def main(args=sys.argv):
 		
 		os.chdir(cwd)
 		
+		strl_suffix = base_config.get(BASE_CONFIG_SECTION, 'csv_long_string_suffix')
+		
 		if cache:
-			cleaner = RCCacheParser(config, system, hyperpause=hyperpause, csv=csv)
+			cleaner = RCCacheParser(config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix)
 		elif config.get(system, 'is_mame'):
-			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause, csv=csv)
+			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix)
 		else:
-			cleaner = RCRomParser(games, config, system, hyperpause=hyperpause, csv=csv)
+			cleaner = RCRomParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix)
 		
 		report = RCReport(system, base_config)
 		report.log('ROMC : start cleaning "' + system + '"')
@@ -99,6 +103,7 @@ def init_cmd_line():
 	parser.add_argument('-p', '--hpause', dest='hyperpause', action='store_true', help='Generate HyperPause game info INI.')
 	parser.add_argument('-c', '--cache', dest='cache', action='store_true', help='Whether use or not a generated database for SYSTEM.')
 	parser.add_argument('--csv', dest='csv', nargs='*', metavar='FIELD', help='The fields to use for the CSV file.')
+	parser.add_argument('--strl', dest='strl', type=int, default=0, help='The maximum string length for CSV.')
 	
 	return parser.parse_args()
 

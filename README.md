@@ -44,6 +44,9 @@ Create a file called `config.ini`. In this file will live the base configuration
 	; The filepath where to store the complete log.
 	log_file = ''
 	
+	; The suffix to add to the string that exceed the max length of --strl.
+	csv_long_string_suffix=...
+	
 	
 	; Per system config. Create one section per system.
 	[%System%]
@@ -235,7 +238,8 @@ Then go in romc directory, launch a new command line and type : `python romc.py 
 
 - `-p` : Also generate HyperPause game info INI file, located at __HyperPause__.
 - `-c` : Use an already generated _system_.xml file.
-- `--csv` : generate a CSV file _system_.csv. It include by default the name of the game, and you can specify what fields you want.
+- `--csv` : Generate a CSV file _system_.csv. It include by default the name of the game, and you can specify what fields you want.
+- `--strl` : Determine the maximum length of strings in the CSV file.
 
 ##### CSV fields
 
