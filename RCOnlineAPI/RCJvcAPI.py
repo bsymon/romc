@@ -63,9 +63,6 @@ class RCJvcAPI(RCOnlineAPI):
 				note         = html.select('div.hit-note-g')
 				resume       = html.select('span[itemprop="description"]')
 				
-				# TODO chercher l'image
-				# TODO récup l'extension de l'image
-				
 				if len(editor) > 0:
 					data['editor'] = editor[0].text
 				if len(release_date) > 0:
@@ -78,6 +75,14 @@ class RCJvcAPI(RCOnlineAPI):
 					data['note'] = note[0].text.strip()
 				if len(resume) > 0:
 					data['resume'] = resume[0].text
+				
+				if self.config.get(self.system, 'download_covers'):
+					image = html.select('span.recto-jaquette.actif > span:first-element-of')
+					
+					if len(image) > 0:
+						img_url       = 'http:' + image[0]['data-selector']
+						img_ext       = img_url[img_url.rindex('.'):]
+						data['image'] = { 'file': self._request(img_url, file=True), 'ext': img_ext }
 			else:
 				return -1
 		except RCException:

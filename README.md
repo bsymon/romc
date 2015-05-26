@@ -83,6 +83,9 @@ Create a file called `config.ini`. In this file will live the base configuration
 	; Which API use for online data. (whether "jvc", "ign", or "mobygames")
 	online_api = ''
 	
+	; Set to true romc will download the game cover (only available with JVC API).
+	download_covers = true
+	
 	; Indicate if the system should be considered as Mame. (true or false)
 	is_mame = false
 	
@@ -154,6 +157,12 @@ romc have to perform at least one request per game. That could do __a lot__ of r
 This means thousands of request.
 
 To reduce the risk of "DDoS" or server ban (Google can do that), between each request an interval of 2 secondes has been set. So if you have a lot of games, get data for all of them can take several minutes, or hours. Be patient !
+
+#### Covers
+
+You can download the covers of your games with romc. Set configuration option `download_covers` to true for your system. The files will be downloaded in "covers/" folder.
+
+_This option is only available for JVC API ([Jeuxvideo.com](http://www.jeuxvideo.com))._
 
 Countries
 ---------

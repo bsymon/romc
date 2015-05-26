@@ -16,6 +16,7 @@ from RCReport import RCReport
 from RCOnlineAPI.RCJvcAPI import RCJvcAPI
 
 HYPERPAUSE_DIR = 'HyperPause/'
+COVERS_DIR     = 'covers/'
 
 class RCGameParser(object):
 	__metaclass__ = ABCMeta
@@ -208,6 +209,10 @@ class RCGameParser(object):
 		lang          = self.config.get(self.system, 'online_data_lang').split(',')
 		self.generate = True
 		
+		# On créé le dossier "covers" si besoin
+		if self.config.get(self.system, 'download_covers') and not os.path.exists(COVERS_DIR):
+			os.mkdir(COVERS_DIR)
+		
 		for (game, infos) in self.games.items():
 			# On ne cherche pas de données si il y en a déjà ou si aucune donnée n'a été trouvée la fois précédente avec l'API utilisée.
 			if infos['onlineData']['state'] or (api_name in infos['onlineData'] and not infos['onlineData'][api_name]):
@@ -232,6 +237,7 @@ class RCGameParser(object):
 				resume       = data['resume']
 				note         = data['note']
 				rating       = data['rating']
+				image        = data['image']
 				
 				# Je procède comme ceci afin d'éviter de perdre des données qui peuvent être déjà présentes
 				infos['year']       = release_date or infos['year']
@@ -241,10 +247,16 @@ class RCGameParser(object):
 				infos['note']       = note         or infos['note']
 				infos['rating']     = rating       or infos['rating']
 				
+				# Récupération de la cover
+				if image != None:
+					file = open('covers/' + game + image['ext'], 'wb')
+					
+					file.write(image['file'].read())
+					file.close()
+					image['file'].close()
+				
 				infos['onlineData']['state']  = True
 				infos['onlineData'][api_name] = True
-				
-				# TODO si image, enregistrer dans un fichier ayant le même nom que le jeu
 	
 	def _hyperpause(self):
 		""" Génère un fichier INI pour HyperPause. """

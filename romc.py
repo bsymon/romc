@@ -51,6 +51,7 @@ def main(args=sys.argv):
 		config.add_option(system, 'online_data',      False, bool)
 		config.add_option(system, 'online_data_lang', '',    str)
 		config.add_option(system, 'online_api',       '',    str)
+		config.add_option(system, 'download_covers',  True,  bool)
 		config.add_option(system, 'is_mame',          False, bool)
 		config.add_option(system, 'dat_file',         '',    str)
 		config.add_option(system, 'cat_files',        '',    str)

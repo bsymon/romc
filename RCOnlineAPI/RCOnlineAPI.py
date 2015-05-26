@@ -55,14 +55,17 @@ class RCOnlineAPI(object):
 				url += '?' + data
 		
 		try:
-			req   = urllib2.Request(url, data if data != None and method == 'POST' else None)
+			req = urllib2.Request(url, data if data != None and method == 'POST' else None)
 			req.add_header('User-Agent', 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.0)')
 			
-			resp  = urllib2.urlopen(req)
-			# TODO Si file = True, ne pas retourner la réponse, mais l'objet.
-			data  = resp.read()
+			resp = urllib2.urlopen(req)
 			
-			resp.close()
+			if not file:
+				data = resp.read()
+				resp.close()
+			else:
+				data = resp
+			
 		except IOError as e:
 			raise RCException('[Online data] Cannot connect to "' + url + '" : ' + e.message)
 		
