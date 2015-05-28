@@ -4,6 +4,7 @@ import os.path
 import codecs
 import StringIO
 import string
+import re
 
 from glob import glob
 
@@ -85,6 +86,7 @@ def norm_version(version):
 	
 	return float(r)
 
+re_determinant = re.compile(ur'((?![\W\s])[\w\W\s]+?)(, *(The|Les|La|Le))', re.UNICODE)
 def clean_name(source_name):
 	"""
 		Nettoie le nom du jeu.
@@ -97,8 +99,7 @@ def clean_name(source_name):
 	except ValueError:
 		game_clean_name = source_name
 	
-	if game_clean_name.endswith(', The'):
-		game_clean_name = 'The ' + game_clean_name[0:game_clean_name.index(', The')]
+	game_clean_name = re_determinant.sub(r'\3 \1', game_clean_name)
 	
 	return game_clean_name
 

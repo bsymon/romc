@@ -40,7 +40,7 @@ class RCMobygamesAPI(RCOnlineAPI):
 		autho = string.ascii_lowercase + string.digits + ' -'
 		game  = ''.join([l for l in list(game.lower().translate(None, ':\'/*!&.').replace(' - ', '-').replace(' ', '-')) if l in autho])
 		
-		return self.url + '/game/arcade/' + game
+		return self.url + '/game/arcade/' + (game[4:] if game.startswith('the-') else game)
 	
 	def _get_data(self, url):
 		report = RCReport()
