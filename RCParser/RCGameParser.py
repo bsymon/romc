@@ -249,7 +249,7 @@ class RCGameParser(object):
 				
 				# Récupération de la cover
 				if image != None:
-					file = open('covers/' + game + image['ext'], 'wb')
+					file = open('covers/' + infos['original_name'] + image['ext'], 'wb')
 					
 					file.write(image['file'].read())
 					file.close()
