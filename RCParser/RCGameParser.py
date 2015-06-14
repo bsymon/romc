@@ -295,15 +295,20 @@ class RCGameParser(object):
 		
 		file        = codecs.open(self.system + '.csv', 'wb')
 		csv_writer  = csv.writer(file)
-		csv_fields  = ['game']
 		
-		csv_fields.extend(self.csv)
-		csv_writer.writerow(csv_fields)
+		csv_writer.writerow(self.csv)
 		
 		for (game, infos) in self.games.items():
-			fields = [game]
+			fields = []
 			
-			fields.extend([value for (field, value) in infos.items() if field in self.csv])
+			for csv_field in self.csv:
+				if csv_field == 'game':
+					fields.append(game)
+				elif csv_field not in infos:
+					continue
+				else:
+					fields.append(infos[csv_field])
+			
 			csv_writer.writerow(['???' if v == None else (v if len(v) <= self.strl else v[0:self.strl] + self.strl_suffix) for v in fields])
 		
 		file.close()

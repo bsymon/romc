@@ -247,11 +247,12 @@ Then go in romc directory, launch a new command line and type : `python romc.py 
 
 - `-p` : Also generate HyperPause game info INI file, located at __HyperPause__.
 - `-c` : Use an already generated _system_.xml file.
-- `--csv` : Generate a CSV file _system_.csv. It include by default the name of the game, and you can specify what fields you want.
+- `--csv` : Generate a CSV file _system_.csv. You can specify what fields you want.
 - `--strl` : Determine the maximum length of strings in the CSV file.
 
 ##### CSV fields
 
+- __game__ : The name of the game.
 - __original_name__ : The original name of the game (the filename).
 - __country__ : The country.
 - __version__ : The dump version of the game.
@@ -264,7 +265,7 @@ Then go in romc directory, launch a new command line and type : `python romc.py 
 - __score__ : The score the game had during the second stage. If you use `-c` option, will be equal to 0.
 - __onlineData__ : Whether the game has online data or not.
 
-__Example__ : `python romc.py Mame -c --csv year country note`
+__Example__ : `python romc.py Mame -c --csv game year country note`
 
 #### Dependencies
 
