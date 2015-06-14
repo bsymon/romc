@@ -309,7 +309,7 @@ class RCGameParser(object):
 				else:
 					fields.append(infos[csv_field])
 			
-			csv_writer.writerow(['???' if v == None else (v if len(v) <= self.strl else v[0:self.strl] + self.strl_suffix) for v in fields])
+			csv_writer.writerow(['???' if v == None else (v if len(v) <= self.strl else v[0:self.strl] + self.strl_suffix).encode('utf-8') for v in fields])
 		
 		file.close()
 	
