@@ -63,6 +63,7 @@ def main(args=sys.argv):
 		base_config.add_option(BASE_CONFIG_SECTION, 'log_level',              1,     int)
 		base_config.add_option(BASE_CONFIG_SECTION, 'log_file',               '',    str)
 		base_config.add_option(BASE_CONFIG_SECTION, 'csv_long_string_suffix', '...', str)
+		base_config.add_option(BASE_CONFIG_SECTION, 'csv_no_info_str',        '???', str)
 		
 		# Synchro du fichier avec la config
 		config.read(config_parser, system)
@@ -77,11 +78,11 @@ def main(args=sys.argv):
 		strl_suffix = base_config.get(BASE_CONFIG_SECTION, 'csv_long_string_suffix')
 		
 		if cache:
-			cleaner = RCCacheParser(config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix)
+			cleaner = RCCacheParser(config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=base_config.get(BASE_CONFIG_SECTION, 'csv_no_info_str'))
 		elif config.get(system, 'is_mame'):
-			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix)
+			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=base_config.get(BASE_CONFIG_SECTION, 'csv_no_info_str'))
 		else:
-			cleaner = RCRomParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix)
+			cleaner = RCRomParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=base_config.get(BASE_CONFIG_SECTION, 'csv_no_info_str'))
 		
 		report = RCReport(system, base_config)
 		report.log('ROMC : start cleaning "' + system + '"')

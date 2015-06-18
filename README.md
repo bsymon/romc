@@ -47,6 +47,9 @@ Create a file called `config.ini`. In this file will live the base configuration
 	; The suffix to add to the string that exceed the max length of --strl.
 	csv_long_string_suffix=...
 	
+	; The string to set in the CSV when no info is available.
+	csv_no_info_str=???
+	
 	
 	; Per system config. Create one section per system.
 	[%System%]

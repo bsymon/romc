@@ -25,7 +25,7 @@ class RCGameParser(object):
 	
 	regex = None
 	
-	def __init__(self, games_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix=''):
+	def __init__(self, games_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
 		self.temp_games        = {}
 		self.games             = {}
 		self.list              = games_list or []
@@ -35,6 +35,7 @@ class RCGameParser(object):
 		self.csv               = csv
 		self.strl              = strl
 		self.strl_suffix       = strl_suffix
+		self.csv_no_info_str   = csv_no_info_str
 		self.excludes          = []
 		self.move_games        = []
 		self.move_temp_games   = False
@@ -309,7 +310,7 @@ class RCGameParser(object):
 				else:
 					fields.append(infos[csv_field])
 			
-			csv_writer.writerow(['???' if v == None else (v if len(v) <= self.strl else v[0:self.strl] + self.strl_suffix).encode('utf-8') for v in fields])
+			csv_writer.writerow([self.csv_no_info_str if v == None else (v if len(v) <= self.strl else v[0:self.strl] + self.strl_suffix).encode('utf-8') for v in fields])
 		
 		file.close()
 	
