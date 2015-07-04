@@ -9,7 +9,7 @@ from RCGameParser import RCGameParser
 class RCRomParser(RCGameParser):
 	""" Parser pour système console """
 	
-	regex  = ur'(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP|HWTests)\)?(?!\w)|(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.&\'-]+ )?(?P<hack1>Hack)(?: [\w\s.&\'-]*)?|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h|p))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])'
+	regex  = ur'(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP|HWTests)\)?(?!\w)|(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.&\'-]+ )?(?P<hack1>Hack)(?: [\w\s.&\'-]*)?|(?:(?P<media>Cart|Disc|Disk|Tape) *(?P<media_n>\d+)(?: *Side *(?P<side>A|B))?)|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h|p))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])'
 	
 	def __init__(self, gameList, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
 		super(RCRomParser, self).__init__(gameList, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=csv_no_info_str)
@@ -29,6 +29,9 @@ class RCRomParser(RCGameParser):
 			special    = None
 			flag_ver   = None
 			flags      = None
+			media      = None
+			media_n    = None
+			side       = None
 			ok_flags   = None
 			
 			move = False
@@ -45,7 +48,9 @@ class RCRomParser(RCGameParser):
 				fixe         = fixe     or field.group('fixe')
 				special      = special  or field.group('special')
 				flag_ver     = flag_ver or field.group('flag_version')
-				# flags        = flags    or field.group('flags')
+				media        = media    or field.group('media')
+				media_n      = media_n  or int(field.group('media_n'))
+				side         = side     or field.group('side')
 				
 				if temp_country in self.countries or temp_country in self.exclude_countries:
 					country = country or temp_country
@@ -60,6 +65,9 @@ class RCRomParser(RCGameParser):
 			if special != None and not self.config.get(self.system, 'special'):
 				report.log('\t\t- Special game not allowed (' + special + ')', 3)
 				move = True
+			elif media_n != None and media_n > 1:
+				report.log('\t\t- Not the first media (' + str(media_n) + ')', 3)
+				continue # On ne déplace pas le jeu, celui-ci doit rester dans le dossier.
 			# Si c'est un hack, on vérifie si on les autorise
 			elif hack != None and self.config.get(self.system, 'only_legit'):
 				report.log('\t\t- Not legit', 3)
