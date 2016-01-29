@@ -15,6 +15,7 @@ class RCConfig:
 		
 		if section not in self._fields:
 			self._fields[section] = {}
+			# Juste un test VSCode
 			
 		if option in self._fields[section]:
 			raise RCException(option + u' est déjà définie dans ' + section + '.')
