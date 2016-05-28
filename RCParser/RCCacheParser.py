@@ -104,6 +104,8 @@ class RCCacheParser(RCGameParser):
 			
 			# On fusionne les nouveaux jeux à la BDD
 			self.games.update(parser.games)
+			
+			self.generate = True
 		
 		# On ajoute à nouveaux les jeux renommés, afin que les fichiers associés soient renommés aussi
 		self.list.update(renamed)
