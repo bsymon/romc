@@ -27,11 +27,14 @@ def load_games_dir(dir, exts):
 	else:
 		exts   = exts.replace('.', '').split(',')
 	
-	files  = []
+	files  = {}
 	
 	for ext in exts:
 		# On supprime le chemin et l'extension pour ne garder que le nom
-		files.extend([os.path.basename(x)[0:-(len(ext) + 1)] for x in glob(os.path.normpath(dir + '/*.' + ext))])
+		games = [os.path.basename(x)[0:-(len(ext) + 1)] for x in glob(os.path.normpath(dir + '/*.' + ext))]
+		
+		for game in games:
+			files[game] = { 'dir': dir, 'ext': ext }
 	
 	return files
 
@@ -102,6 +105,9 @@ def clean_name(source_name):
 	game_clean_name = re_determinant.sub(r'\3 \1', game_clean_name)
 	
 	return game_clean_name
+
+def clean_filename(filename):
+	return reduce(lambda a, b: a.replace(*b), (('[', '__'), (']', '__')), filename)
 
 class RCException(Exception):
 	pass

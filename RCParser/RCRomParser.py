@@ -8,11 +8,11 @@ from RCGameParser import RCGameParser
 
 class RCRomParser(RCGameParser):
 	""" Parser pour système console """
+
+	regex = ur'(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP|HWTests)\)?(?!\w)|(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.&\'-]+ )?(?P<hack1>Hack)(?: [\w\s.&\'-]*)?|(?:(?P<media>Cart|Disc|Disk|Tape) *(?P<media_n>\d+)(?: *Side *(?P<side>A|B))?)|[\w\s]+)\))|(?:__(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h|p))[ _]*(?P<flag_version>[\d\w]+)?|.+?)__)'
 	
-	regex  = ur'(?<!\w)\(?(?P<special>BIOS|BS|PC10|ST|NP|HWTests)\)?(?!\w)|(?:\(V *(?P<version>[\d.]+)\))|(?:\((?P<field>(?:[\w\s.&\'-]+ )?(?P<hack1>Hack)(?: [\w\s.&\'-]*)?|(?:(?P<media>Cart|Disc|Disk|Tape) *(?P<media_n>\d+)(?: *Side *(?P<side>A|B))?)|[\w\s]+)\))|(?:\[(?P<flags>(?P<good>!)|(?:(?P<fixe>f)|(?P<hack2>h|p))[ _]*(?P<flag_version>[\d\w]+)?|.+?)\])'
-	
-	def __init__(self, gameList, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
-		super(RCRomParser, self).__init__(gameList, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=csv_no_info_str)
+	def __init__(self, games_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
+		super(RCRomParser, self).__init__(games_list, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=csv_no_info_str)
 		self.move_temp_games = True
 		self.ok_flags           = config.get(system, 'flags').split(',')
 	
@@ -20,19 +20,22 @@ class RCRomParser(RCGameParser):
 		report = RCReport()
 		regex  = re.compile(RCRomParser.regex, re.IGNORECASE)
 		
-		for game_name in self.list:
-			country    = None
-			version    = None
-			hack       = None
-			good       = None
-			fixe       = None
-			special    = None
-			flag_ver   = None
-			flags      = None
-			media      = None
-			media_n    = None
-			side       = None
-			ok_flags   = None
+		for (game_name, game_file) in self.list.items():
+			filename  = game_name
+			game_name = clean_filename(game_name)
+			
+			country  = None
+			version  = None
+			hack     = None
+			good     = None
+			fixe     = None
+			special  = None
+			flag_ver = None
+			flags    = None
+			media    = None
+			media_n  = None
+			side     = None
+			ok_flags = None
 			
 			move = False
 			
@@ -42,15 +45,15 @@ class RCRomParser(RCGameParser):
 				temp_country = field.group('field')
 				temp_flags   = field.group('flags')
 				
-				version      = version  or field.group('version')
-				hack         = hack     or field.group('hack1') or field.group('hack2')
-				good         = good     or field.group('good')
-				fixe         = fixe     or field.group('fixe')
-				special      = special  or field.group('special')
-				flag_ver     = flag_ver or field.group('flag_version')
-				media        = media    or field.group('media')
-				media_n      = media_n  or int(field.group('media_n'))
-				side         = side     or field.group('side')
+				version  = version  or field.group('version')
+				hack     = hack     or field.group('hack1') or field.group('hack2')
+				good     = good     or field.group('good')
+				fixe     = fixe     or field.group('fixe')
+				special  = special  or field.group('special')
+				flag_ver = flag_ver or field.group('flag_version')
+				media    = media    or field.group('media')
+				media_n  = media_n  or (int(field.group('media_n')) if field.group('media_n') != None else None)
+				side     = side     or field.group('side')
 				
 				if temp_country in self.countries or temp_country in self.exclude_countries:
 					country = country or temp_country
@@ -97,7 +100,8 @@ class RCRomParser(RCGameParser):
 				self.temp_games[game_clean_name] = []
 			
 			self.temp_games[game_clean_name].append({
-				'original_name': game_name,
+				'original_name': filename,
+				'game_name':     game_name,
 				'country':       country,
 				'version':       norm_version(version),
 				'editor':        None,

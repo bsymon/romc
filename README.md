@@ -138,6 +138,14 @@ For the dump version the higher is the better.
 
 After all this process, only one game is selected.
 
+#### Cache
+
+If you specify the `-c` option in the command line, romc will uses the database file that already exists and won't does all the process again, except for any new games that have been added to the directory. It will also delete any games that have been removed from the directory.
+
+#### Notes
+
+The games whose filename contains __[__ and __]__ will be renamed. The brackets will be remplaced by a double underscore "__". This is to avoid bugs that can occurs when the name of the file is stored in a .ini file.
+
 Online data
 -----------
 

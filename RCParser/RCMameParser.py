@@ -16,8 +16,8 @@ class RCMameParser(RCGameParser):
 	
 	regex = ur'(?:set +(?P<set>\d+)|(?:rev(?:\.|ision)?|v(?:\.|er\.?|ersion)?) *(?P<version>(?:\.?[\w\d]+)*)|(?P<hack>bootleg|prototype|hack)|(?P<field>\w+))(?!\w)'
 	
-	def __init__(self, game_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
-		super(RCMameParser, self).__init__(game_list, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=csv_no_info_str)
+	def __init__(self, games_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
+		super(RCMameParser, self).__init__(games_list, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=csv_no_info_str)
 		
 		# Charge le fichier DAT et les fichiers de genres.
 		dat_file  = config.get(system, 'dat_file')
@@ -114,6 +114,7 @@ class RCMameParser(RCGameParser):
 			
 			self.temp_games[game_clean_name].append({
 				'original_name': game_source_name,
+				'game_name':     game_source_name,
 				'country':       country,
 				'version':       1.0 if not version else norm_version(version),
 				'editor':        editor.text if editor != None else 'Unknow',

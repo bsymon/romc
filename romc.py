@@ -78,7 +78,7 @@ def main(args=sys.argv):
 		strl_suffix = base_config.get(BASE_CONFIG_SECTION, 'csv_long_string_suffix')
 		
 		if cache:
-			cleaner = RCCacheParser(config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=base_config.get(BASE_CONFIG_SECTION, 'csv_no_info_str'))
+			cleaner = RCCacheParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=base_config.get(BASE_CONFIG_SECTION, 'csv_no_info_str'))
 		elif config.get(system, 'is_mame'):
 			cleaner = RCMameParser(games, config, system, hyperpause=hyperpause, csv=csv, strl=strl, strl_suffix=strl_suffix, csv_no_info_str=base_config.get(BASE_CONFIG_SECTION, 'csv_no_info_str'))
 		else:

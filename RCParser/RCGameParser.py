@@ -28,7 +28,7 @@ class RCGameParser(object):
 	def __init__(self, games_list, config, system, hyperpause=False, csv=None, strl=0, strl_suffix='', csv_no_info_str=''):
 		self.temp_games        = {}
 		self.games             = {}
-		self.list              = games_list or []
+		self.list              = games_list or {}
 		self.config            = config
 		self.system            = system
 		self.hyperpause        = hyperpause
@@ -104,19 +104,19 @@ class RCGameParser(object):
 					if score >= lastScore:
 						# On déplace le dernier jeu meilleur score, comme ce n'est plus lui.
 						if highestScore != None and self.move_temp_games:
-							self.move_games.append(editions[highestScore]['original_name'])
+							self.move_games.append(editions[highestScore]['game_name'])
 						
 						lastScore    = score
 						highestScore = i
 					elif self.move_temp_games:
 						# On déplace le jeu, car son score n'est pas le meilleur.
-						self.move_games.append(edition['original_name'])
+						self.move_games.append(edition['game_name'])
 			else:
 				highestScore = 0
 			
 			self.games[game] = editions[highestScore]
 			
-			report.log('\t\t>> Choice : ' + self.games[game]['original_name'], 2)
+			report.log('\t\t>> Choice : ' + self.games[game]['game_name'], 2)
 	
 	def _build_database(self):
 		"""
@@ -136,7 +136,7 @@ class RCGameParser(object):
 		for (game, infos) in self.games.items():
 			online_data = E.onlineData({ 'state': str(infos['onlineData']['state']) })
 			game_tag    = E.game(
-				{ 'name': infos['original_name'], 'index': 'true', 'image': '1' },
+				{ 'name': infos['game_name'], 'index': 'true', 'image': '1' },
 				E.description(game),
 				E.cloneof(''),
 				E.crc(''),
@@ -250,7 +250,7 @@ class RCGameParser(object):
 				
 				# Récupération de la cover
 				if image != None:
-					file = open('covers/' + infos['original_name'] + image['ext'], 'wb')
+					file = open('covers/' + infos['game_name'] + image['ext'], 'wb')
 					
 					file.write(image['file'].read())
 					file.close()
@@ -269,7 +269,7 @@ class RCGameParser(object):
 		lines      = []
 		
 		for (game, infos) in self.games.items():
-			section = infos['original_name']
+			section = infos['game_name']
 			editor  = infos['editor'] or u''
 			year    = infos['year'] or u''
 			genre   = infos['genre'] or u''
@@ -314,6 +314,25 @@ class RCGameParser(object):
 		
 		file.close()
 	
+	def _rename_game_files(self):
+		report = RCReport()
+		
+		report.log('CHECKING FOR GAMES TO BE RENAMED ...')
+		
+		for (i, game) in self.games.items():
+			if game['game_name'] != game['original_name']:
+				file_info          = self.list[game['original_name']]
+				game_dir           = os.path.normpath(file_info['dir'])
+				game_original_path = os.path.join(game_dir, game['original_name'] + '.' + file_info['ext'])
+				game_new_path      = os.path.join(game_dir, game['game_name'] + '.' + file_info['ext'])
+				
+				os.rename(game_original_path, game_new_path)
+				
+				# On doit regénérer la base de données (pour CacheParser)
+				self.generate = True
+				
+				report.log('\t"' + game['original_name'] + '" renamed to "' + game['game_name'] + '"', 2)
+	
 	def clean(self):
 		""" Exécute les processus de nettoyage. """
 		
@@ -329,7 +348,10 @@ class RCGameParser(object):
 			if self.config.get(self.system, 'move_files'):
 				report.log('MOVING ' + str(len(self.move_games)) + ' GAMES')
 				self._move_games()
-			
+		
+		# On renomme les jeux si besoin
+		self._rename_game_files()
+		
 		if self.config.get(self.system, 'online_data'):
 			report.log('LOOKING FOR ONLINE DATA ...')
 			self._online_data()
