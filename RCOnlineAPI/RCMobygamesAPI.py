@@ -59,7 +59,7 @@ class RCMobygamesAPI(RCOnlineAPI):
 		
 		try:
 			resp = self._request(url)
-			html = BeautifulSoup(resp)
+			html = BeautifulSoup(resp, 'lxml')
 			
 			# Sélection des champs qui nous intéresse.
 			note = html.select('#coreGameScore .scoreHi')

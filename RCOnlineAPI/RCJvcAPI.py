@@ -50,7 +50,7 @@ class RCJvcAPI(RCOnlineAPI):
 		
 		try:
 			resp     = self._request(url)
-			html     = BeautifulSoup(resp)
+			html     = BeautifulSoup(resp, 'lxml')
 			techlist = html.find(class_='resume-tech-list')
 			
 			# Si "techlist" vaut None, c'est que ce n'est pas une fiche de jeu.
@@ -77,7 +77,7 @@ class RCJvcAPI(RCOnlineAPI):
 					data['resume'] = resume[0].text
 				
 				if self.config.get(self.system, 'download_covers'):
-					image = html.select('span.recto-jaquette.actif > span:first-element-of')
+					image = html.select('span.recto-jaquette.actif > span:nth-of-type(1)')
 					
 					if len(image) > 0:
 						img_url       = 'http:' + image[0]['data-selector']

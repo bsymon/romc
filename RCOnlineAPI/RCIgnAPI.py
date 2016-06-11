@@ -48,7 +48,7 @@ class RCIgnAPI(RCOnlineAPI):
 		
 		try:
 			resp      = self._request(url)
-			html      = BeautifulSoup(resp)
+			html      = BeautifulSoup(resp, 'lxml')
 			game_info = html.find(class_='gameInfo')
 			
 			# Sélection des champs qui nous intéresse.
